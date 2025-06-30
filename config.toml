@@ -1,0 +1,6 @@
+[database]
+name = "wasmer_db"
+user = "wasmer_user"
+password = "wasmer_password"
+host = "db"
+port = 5432

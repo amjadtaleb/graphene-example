@@ -1,0 +1,73 @@
+[project]
+name = "wasmer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "django>=5.2.3",
+    "aiodataloader>=0.3.0",
+    "nanoid>=2.0.0",
+    "msgspec>=0.19.0",
+    "psycopg[binary]>=3.2.9",
+    "toml>=0.10.2",
+    "uvicorn>=0.34.3",
+    "opentelemetry-api>=1.34.1",
+    "opentelemetry-sdk>=1.34.1",
+    "opentelemetry-exporter-otlp>=1.34.1",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.34.1",
+    "opentelemetry-exporter-otlp-proto-http>=1.34.1",
+    "opentelemetry-instrumentation>=0.55b1",
+    "opentelemetry-instrumentation-asgi>=0.55b1",
+    "opentelemetry-instrumentation-asyncio>=0.55b1",
+    "opentelemetry-instrumentation-psycopg>=0.55b1",
+    "opentelemetry-instrumentation-django==0.55b1",
+    "opentelemetry-instrumentation-grpc>=0.55b1",
+    "opentelemetry-instrumentation-logging>=0.55b1",
+    "opentelemetry-instrumentation-redis>=0.55b1",
+    "prometheus-client>=0.22.1",
+    "logfire[system-metrics]>=3.21.1",
+    "python-json-logger>=3.3.0",
+    "django-filter>=25.1",
+    "django-prometheus>=2.4.0",
+    "graphene-django>=3.2.3",
+    "django-extensions>=4.1.0",
+    "graphql-server[http]>=3.0.0b7",
+    "starlette-graphene3>=0.6.0",
+    "strawberry-graphql[django,opentelemetry]>=0.275.5",
+    "strawberry-graphql-django>=0.62.0",
+    "django-choices-field>=2.3.0",
+    "django-enum>=2.2.3",
+    "kolo>=2.40.1",
+    "daphne>=4.2.0",
+]
+
+
+[dependency-groups]
+dev = [
+    "typing-extensions>=4.14.0",
+    "asyncpg-stubs>=0.30.1",
+    "devtools>=0.12.2",
+    "ipython>=9.3.0",
+    "pyright>=1.1.402",
+    "ruff>=0.12.0",
+    "watchfiles>=1.1.0",
+    "ruff>=0.11.7",
+    "pre-commit>=4.2.0",
+    "codespell>=2.4.1",
+    "python-dotenv>=1.0.1",
+    "ty>=0.0.1a7",
+    "types-django-import-export>=4.3.0.20250218",
+    "types-psycopg2>=2.9.21.20250516",
+]
+
+
+
+[tool.ruff]
+line-length = 120
+
+[tool.pytest.ini_options]
+python_files = ["test_*.py", ]
+
+[tool.uv.sources]
+graphql-server = { git = "https://github.com/graphql-python/graphql-server.git" }
