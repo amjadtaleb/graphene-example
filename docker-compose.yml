@@ -7,6 +7,8 @@ x-default-logging: &logging
 
 volumes:
   pg-data:
+  # grafana-data:
+
 
 networks:
   wasmer-net:
@@ -24,7 +26,7 @@ services:
     volumes:
       - pg-data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}" ]
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER:-wasmer_user}", "-d", "${POSTGRES_DB:-wasmer_db}" ]
       start_period: 1s
       interval: 1s
       timeout: 2s
@@ -118,6 +120,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: wasmer_prometheus
+    # command: [ "--config.file=/etc/prometheus/prometheus.yml" ]
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --web.console.templates=/etc/prometheus/consoles
@@ -139,3 +142,23 @@ services:
     networks:
       - wasmer-net
     logging: *logging
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: wasmer_grafana
+  #   ports:
+  #     - "3009:3000"
+  #   volumes:
+  #     - ./compose/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+  #     - ./compose/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+  #     - grafana-data:/var/lib/grafana
+  #   networks:
+  #     - wasmer-net
+  #   depends_on:
+  #     - prometheus
+  #   environment:
+  #     GF_SECURITY_ADMIN_PASSWORD: admin
+  #     GF_USERS_ALLOW_SIGN_UP: false
+  #     GF_SERVER_DOMAIN: localhost
+  #   restart: unless-stopped
+  #   logging: *logging
