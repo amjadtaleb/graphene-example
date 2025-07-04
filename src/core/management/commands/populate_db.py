@@ -1,12 +1,10 @@
-import asyncio
-from django.core.management.base import BaseCommand
-from core.models import User, DeployedApp
-from core.fields import PlanEnum
-
 from random import choice
 
+from django.core.management.base import BaseCommand
 
-plans = [plan.value for plan in PlanEnum]
+from core.fields import PlanEnum
+from core.models import DeployedApp, User
+
 names = [
     "John",
     "Jane",
@@ -59,7 +57,7 @@ def gen_users():
     print("\n Users: ")
     for name in names:
         print(name, end=" | ")
-        yield User(username=name.lower(), plan=choice(plans), full_name=f"{name} {choice(last_names)}")
+        yield User(username=name.lower(), plan=choice(PlanEnum.values), full_name=f"{name} {choice(last_names)}")
 
 def gen_apps():
     print("\n Apps: ")
