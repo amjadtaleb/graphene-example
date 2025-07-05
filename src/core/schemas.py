@@ -1,4 +1,3 @@
-import asyncio
 from logging import getLogger
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -68,8 +67,7 @@ class App(DjangoObjectType):
         return CustomNode.to_global_id("DeployedApp", self.pk)
 
     async def resolve_owner(self, info):
-        loop = asyncio.get_running_loop()
-        return await UserLoader(loop=loop).load(self.owner_id)
+        return await UserLoader().load(self.owner_id)
 
 
 class AppConnection(relay.Connection):
@@ -99,8 +97,7 @@ class User(DjangoObjectType):
         convert_choices_to_enum = True
 
     async def resolve_apps(root, info):
-        loop = asyncio.get_running_loop()
-        return await AppLoader(loop=loop).load_many([app async for app in root.apps.values_list("id", flat=True)])
+        return await AppLoader().load_many([app async for app in root.apps.values_list("id", flat=True)])
 
 
 class Query(graphene.ObjectType):
