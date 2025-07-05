@@ -47,6 +47,7 @@ services:
       - ./src:/app/src
       - ./staticfiles:/app/src/staticfiles
       - ./config.toml:/app/config.toml
+      - ./compose/kolo-config.toml:/app/src/.kolo/config.toml
     depends_on:
       db:
         condition: service_healthy

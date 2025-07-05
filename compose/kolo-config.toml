@@ -1,0 +1,12 @@
+hide_startup_message = true
+
+[filters]
+ignore_request_paths = ["/static/", "favicon.ico", "/metrics", "/health"]
+
+include_frames = [
+    "asgiref",
+    "graphql", "graphql_server", "graphql_relay",
+    "graphene", "graphene_django",
+    "aiodataloader", 
+    "msgspec"
+]
