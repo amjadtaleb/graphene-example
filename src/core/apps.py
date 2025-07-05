@@ -4,21 +4,11 @@ from logging import getLogger
 from asgiref.sync import sync_to_async
 from django.apps import AppConfig
 from django.db import connection
-from psycopg.types.enum import EnumInfo, register_enum
 
 from .fields import PlanEnum
+from .utils import register_db_enum
 
 logger = getLogger(__name__)
-
-
-def do_it():
-    with connection.cursor() as cursor:
-        conn = cursor.connection
-        if info := EnumInfo.fetch(conn, "plan"):
-            logger.info(f"Registering PlanEnum({info})")
-            register_enum(info, conn, PlanEnum, mapping=[(plan.name, plan.value) for plan in PlanEnum])
-        else:
-            logger.warning("Enum 'plan' not found in the database. You need to run the migration.")
 
 
 class CoreConfig(AppConfig):
@@ -29,8 +19,8 @@ class CoreConfig(AppConfig):
         try:
             loop = asyncio.get_running_loop()
             logger.info("Registering PlanEnum in the running event loop.")
-            loop.create_task(sync_to_async(do_it)())
+            loop.create_task(sync_to_async(register_db_enum)(connection, "plan", PlanEnum))
         except RuntimeError:
             # If no running loop, we are in a synchronous context
             logger.info("Registering PlanEnum in a synchronous context.")
-            do_it()
+            register_db_enum(connection, "plan", PlanEnum)
