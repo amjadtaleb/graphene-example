@@ -15,7 +15,7 @@ def do_it():
     with connection.cursor() as cursor:
         conn = cursor.connection
         if info := EnumInfo.fetch(conn, "plan"):
-            logger.info(str(info))
+            logger.info(f"Registering PlanEnum({info})")
             register_enum(info, conn, PlanEnum, mapping=[(plan.name, plan.value) for plan in PlanEnum])
         else:
             logger.warning("Enum 'plan' not found in the database. You need to run the migration.")
@@ -28,9 +28,9 @@ class CoreConfig(AppConfig):
     def ready(self):
         try:
             loop = asyncio.get_running_loop()
+            logger.info("Registering PlanEnum in the running event loop.")
             loop.create_task(sync_to_async(do_it)())
-            logger.info("Registered 'plan' enum in the running event loop.")
         except RuntimeError:
             # If no running loop, we are in a synchronous context
+            logger.info("Registering PlanEnum in a synchronous context.")
             do_it()
-            logger.info("Registered 'plan' enum in a synchronous context.")
