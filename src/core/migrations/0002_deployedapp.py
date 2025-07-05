@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DeployedApp',
             fields=[
-                ('id', models.CharField(default=core.models.generate_app_id, max_length=16, primary_key=True, serialize=False)),
+                ('id', models.CharField(default=core.models.generate_app_id, max_length=12, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=255)),
                 ('active', models.BooleanField(default=True)),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='apps', to=settings.AUTH_USER_MODEL)),

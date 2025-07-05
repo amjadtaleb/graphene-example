@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='User',
             fields=[
-                ('id', models.CharField(default=core.models.generate_user_id, max_length=14, primary_key=True, serialize=False)),
+                ('id', models.CharField(default=core.models.generate_user_id, max_length=12, primary_key=True, serialize=False)),
                 ('username', models.CharField(error_messages={'unique': 'A user with that username already exists.'}, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='username')),
                 ('password', models.CharField(max_length=128, verbose_name='password')),
                 ('full_name', models.TextField()),
