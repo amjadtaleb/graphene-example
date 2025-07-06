@@ -43,11 +43,12 @@ services:
       ENVIRONMENT: local
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       LOG_LEVEL: info
+      KOLO_PATH: /tmp/kolo
     volumes:
       - ./src:/app/src
       - ./staticfiles:/app/src/staticfiles
       - ./config.toml:/app/config.toml
-      - ./compose/kolo-config.toml:/app/src/.kolo/config.toml
+      - ./compose/kolo-config.toml:/tmp/kolo/.kolo/config.toml
     depends_on:
       db:
         condition: service_healthy
