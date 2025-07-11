@@ -203,3 +203,8 @@ LOGGING = {
         },
     },
 }
+
+STMP_PROVIDERS = {
+    "smtp2go": config.smtp2go,
+    "mailersend": config.mailersend,
+}

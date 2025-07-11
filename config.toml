@@ -4,3 +4,17 @@ user = "wasmer_user"
 password = "wasmer_password"
 host = "db"
 port = 5432
+
+[smtp2go]
+api_token = "api-bla"
+webhook_token = "bla"
+domain_id = "bla"
+smtp_host = "mail.smtp2go.com"
+smtp_port = 2525
+
+[mailersend]
+api_token = "bla.bla"
+webhook_token = "bla"
+domain_id = "bla"
+smtp_host = "smtp.mailersend.net"
+smtp_port = 587

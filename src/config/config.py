@@ -12,8 +12,26 @@ class Database(msgspec.Struct):
     port: int
 
 
+class SMTP2Go(msgspec.Struct):
+    webhook_token: str  # our token the provider uses for authentication
+    api_token: str
+    domain_id: str  # not necessary to query users
+    smtp_host: str
+    smtp_port: int
+
+
+class Mailersend(msgspec.Struct):
+    webhook_token: str
+    api_token: str
+    domain_id: str
+    smtp_host: str
+    smtp_port: int
+
+
 class Config(msgspec.Struct):
     database: Database
+    smtp2go: SMTP2Go
+    mailersend: Mailersend
 
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config.toml"
