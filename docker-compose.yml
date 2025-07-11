@@ -59,7 +59,7 @@ services:
     post_start:
       - command: ./manage.py collectstatic --noinput --skip-checks
       - command: ./manage.py migrate --skip-checks
-      - command: ./manage.py populate_db
+      - command: ./manage.py loaddata /app/src/fixtures/initial-data.json
     networks:
       - wasmer-net
     develop:
