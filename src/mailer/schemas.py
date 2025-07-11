@@ -16,6 +16,12 @@ from .smtp_providers import SMTPServiceProvider, SMTPUserNotFound
 logger = getLogger(__name__)
 
 
+class DateBin(graphene.Enum):
+    DAY = "day"
+    WEEK = "week"
+    MONTH = "month"
+
+
 class EmailStats(graphene.ObjectType):
     total = graphene.Int()
     failed = graphene.Int()
@@ -30,7 +36,7 @@ class Usage(graphene.ObjectType):
 
 class UserEmails(graphene.ObjectType):
     sent_emails_count = graphene.Int()
-    usage = graphene.List(Usage, group_by=graphene.String(required=True), time_window=graphene.List(graphene.Date))
+    usage = graphene.List(Usage, group_by=DateBin(required=True), time_window=graphene.List(graphene.Date))
 
     async def resolve_sent_emails_count(parent, info):
         values = await AppEmailTotalLoader().load_many(
@@ -46,12 +52,12 @@ class UserEmails(graphene.ObjectType):
             models.EmailProvider.objects.filter(app_id__in=app_ids).values_list("from_address", flat=True)
         )
         if senders:
-            return await AppEmailLoader().load((tuple(senders), group_by, *time_window))
+            return await AppEmailLoader().load((tuple(senders), group_by.value, *time_window))
 
 
 class AppEmails(graphene.ObjectType):
     total_emails_count = graphene.Int()
-    usage = graphene.List(Usage, group_by=graphene.String(required=True), time_window=graphene.List(graphene.Date))
+    usage = graphene.List(Usage, group_by=DateBin(required=True), time_window=graphene.List(graphene.Date))
 
     class Meta:
         interfaces = (CustomNode,)
@@ -69,7 +75,7 @@ class AppEmails(graphene.ObjectType):
         # TODO: switch to app_id, or not?!
         app = await parent.emailprovider_set.filter(active=True).only("from_address").afirst()
         if app:
-            return await AppEmailLoader().load(((app.from_address,), group_by, *time_window))
+            return await AppEmailLoader().load(((app.from_address,), group_by.value, *time_window))
 
 
 class AppEmailsConnection(relay.Connection):
