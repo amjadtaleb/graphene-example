@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal, Optional
+from typing import Iterable, Literal, Optional, Union
 
 from asgiref.sync import sync_to_async
 from django.contrib.postgres.fields import ArrayField
@@ -112,9 +112,9 @@ class EmailEvent(models.Model):
         return f"{self.event} <{self.from_address}>"
 
     @classmethod
-    async def gen_app_usage(
+    async def gen_usage(
         cls,
-        from_address: str,
+        from_address: Union[Iterable[str], str],
         time_bin: Literal["day", "week", "month"],
         from_time: Optional[datetime] = None,
         to_time: Optional[datetime] = None,
@@ -122,7 +122,11 @@ class EmailEvent(models.Model):
         """Generate usage stats for an app in time bins from from_time to to_time
         In a date range from from_time to to_time (exclusive)
         """
-        filters = models.Q(from_address=from_address)
+        if isinstance(from_address, str):
+            filters = models.Q(from_address=from_address)
+        else:
+            filters = models.Q(from_address__in=from_address)
+
         if from_time:
             filters &= models.Q(send_time__gte=from_time)
         if to_time:
@@ -142,4 +146,12 @@ class EmailEvent(models.Model):
             )
             .order_by("time_bin_start")
         ):
-            yield result
+            yield {
+                "timestamp": result["time_bin_start"],
+                "emails": {
+                    "total": result["total"],
+                    "failed": result["failed"],
+                    "rejected": result["rejected"],
+                    "sent": result["sent"],
+                },
+            }

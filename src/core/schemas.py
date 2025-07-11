@@ -1,56 +1,22 @@
 from logging import getLogger
 
-from django.core.exceptions import ObjectDoesNotExist
 import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
-from graphql import GraphQLError
+
+from mailer.schemas import AppEmails, UserEmails
 
 from . import models
+from .custom_node import CustomNode
 from .dataloaders import AppLoader, EXCLUDE_USER_FIELDS, UserLoader
 from .fields import PlanEnum
 
 logger = getLogger(__name__)
 
 
-class CustomNode(relay.Node):
-    USER_ID_PREFIX = "u_"
-    APP_ID_PREFIX = "app_"
-
-    class Meta:
-        name = "Node"
-
-    @staticmethod
-    def to_global_id(type_, id):
-        if type_ == "User":
-            return f"{CustomNode.USER_ID_PREFIX}{id}"
-        elif type_ == "DeployedApp":
-            return f"{CustomNode.APP_ID_PREFIX}{id}"
-        else:
-            raise GraphQLError("Invalid type")
-
-    @staticmethod
-    def from_global_id(global_id):
-        try:
-            type_, id_ = global_id.split("_", maxsplit=1)
-        except ValueError:
-            raise GraphQLError("Invalid global ID")
-        return type_, id_
-
-    @staticmethod
-    async def get_node_from_global_id(info, global_id, only_type=None):
-        type_, id_ = CustomNode.from_global_id(global_id)
-        try:
-            if CustomNode.USER_ID_PREFIX.startswith(type_):
-                return await models.User.objects.aget(id=id_)
-            elif CustomNode.APP_ID_PREFIX.startswith(type_):
-                return await models.DeployedApp.objects.aget(id=id_)
-        except ObjectDoesNotExist:
-            return None
-
-
 class App(DjangoObjectType):
     id = graphene.ID(required=True)
+    emails = graphene.Field(AppEmails)
 
     class Meta:
         model = models.DeployedApp
@@ -62,6 +28,9 @@ class App(DjangoObjectType):
     async def resolve_owner(self, info):
         return await UserLoader().load(self.owner_id)
 
+    async def resolve_emails(self, info):
+        return self
+
 
 class AppConnection(relay.Connection):
     class Meta:
@@ -71,6 +40,7 @@ class AppConnection(relay.Connection):
 class User(DjangoObjectType):
     plan = graphene.Field(graphene.Enum.from_enum(PlanEnum, name="Plan"))
     apps = relay.ConnectionField(AppConnection)
+    emails = graphene.Field(UserEmails)
 
     def resolve_plan(self, info):
         return self.plan
@@ -86,6 +56,9 @@ class User(DjangoObjectType):
 
     async def resolve_apps(root, info):
         return await AppLoader().load_many([app async for app in root.apps.values_list("id", flat=True)])
+
+    async def resolve_emails(self, info):
+        return self
 
 
 class Query(graphene.ObjectType):

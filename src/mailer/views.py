@@ -76,7 +76,7 @@ async def get_usage(request, from_address: str):
     if to_time_str := request.GET.get("to_time"):
         time_window["to_time"] = dj_tz.make_aware(dj_tz.datetime.fromisoformat(to_time_str))
 
-    response = [i async for i in EmailEvent.gen_app_usage(from_address, date_bin, **time_window)]
+    response = [i async for i in EmailEvent.gen_usage(from_address, date_bin, **time_window)]
     return HttpResponse(msgspec.json.encode(response), content_type="application/json")
 
 
