@@ -8,5 +8,5 @@ include_frames = [
     "graphql", "graphql_server", "graphql_relay",
     "graphene", "graphene_django",
     "aiodataloader", 
-    "msgspec"
+    "msgspec", "httpx"
 ]

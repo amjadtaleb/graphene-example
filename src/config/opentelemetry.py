@@ -6,6 +6,7 @@ from opentelemetry.instrumentation.asyncio import AsyncioInstrumentor
 from opentelemetry.instrumentation.django import DjangoInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.grpc import GrpcAioInstrumentorServer, GrpcAioInstrumentorClient
+from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 
 
 from opentelemetry.sdk.resources import Resource
@@ -35,3 +36,4 @@ def setup_telemetry():
     LoggingInstrumentor().instrument()
     GrpcAioInstrumentorServer().instrument()
     GrpcAioInstrumentorClient().instrument()
+    HTTPXClientInstrumentor().instrument()

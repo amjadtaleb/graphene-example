@@ -13,3 +13,5 @@ DEBUG = True
 INSTALLED_APPS.append("django_extensions")
 
 MIDDLEWARE.insert(0, "kolo.middleware.KoloMiddleware")
+
+ALLOWED_HOSTS.append(".ngrok-free.app")  # for webhooks
