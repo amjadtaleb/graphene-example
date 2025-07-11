@@ -60,6 +60,8 @@ services:
       - command: ./manage.py collectstatic --noinput --skip-checks
       - command: ./manage.py migrate --skip-checks
       - command: ./manage.py loaddata /app/src/fixtures/initial-data.json
+      - command: ./manage.py loaddata /app/src/fixtures/mailer-data.json
+      - command: ./manage.py generate_email_events
     networks:
       - wasmer-net
     develop:

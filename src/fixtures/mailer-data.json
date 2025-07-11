@@ -1,0 +1,44 @@
+[
+    {
+        "model": "mailer.smtpprovider",
+        "pk": 1,
+        "fields": {
+            "name": "smtp2go",
+            "verified_domain": "nicedomain.com",
+            "verified": true,
+            "verified_at": "2025-07-10T07:10:05.782Z",
+            "created_at": "2025-07-10T07:10:05.782Z"
+        }
+    },
+    {
+        "model": "mailer.smtpprovider",
+        "pk": 2,
+        "fields": {
+            "name": "mailersend",
+            "verified_domain": "nicedomain.com",
+            "verified": true,
+            "verified_at": "2025-07-10T07:10:20.656Z",
+            "created_at": "2025-07-10T07:10:20.656Z"
+        }
+    },
+    {
+        "model": "mailer.emailprovider",
+        "pk": 1,
+        "fields": {
+            "app": "21mQkMXXTIJg",
+            "provider": 1,
+            "external_id": "set_by_user",
+            "active": false
+        }
+    },
+    {
+        "model": "mailer.emailprovider",
+        "pk": 2,
+        "fields": {
+            "app": "21mQkMXXTIJg",
+            "provider": 2,
+            "external_id": "set_by_provider",
+            "active": true
+        }
+    }
+]
