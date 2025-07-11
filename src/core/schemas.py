@@ -28,7 +28,6 @@ class CustomNode(relay.Node):
             return f"{CustomNode.APP_ID_PREFIX}{id}"
         else:
             raise GraphQLError("Invalid type")
-            return f"z_{id}"
 
     @staticmethod
     def from_global_id(global_id):
@@ -55,12 +54,6 @@ class App(DjangoObjectType):
 
     class Meta:
         model = models.DeployedApp
-        filter_fields = {
-            "id": ["exact"],
-            "name": ["exact", "icontains", "istartswith"],
-            "active": ["exact"],
-            "owner": ["exact"],
-        }
         interfaces = (CustomNode,)
 
     def resolve_id(self, info):  # this feels too hacky
@@ -84,11 +77,6 @@ class User(DjangoObjectType):
 
     class Meta:
         model = models.User
-        filter_fields = {
-            "id": ["exact"],
-            "username": ["exact"],
-            "plan": ["exact"],
-        }
         exclude_fields = [
             *EXCLUDE_USER_FIELDS,
         ]
