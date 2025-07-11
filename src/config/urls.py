@@ -4,9 +4,11 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import include, path
 from django.views.decorators.csrf import csrf_exempt
+import graphene
 from graphql_server.django.views import AsyncGraphQLView
 
-from core.schemas import schema
+from core.schemas import schema as core_schema
+from mailer.schemas import schema as mailer_schema
 from mailer.views import email_webhook, get_app_credentials, get_usage, switch_provider
 
 
@@ -20,6 +22,18 @@ async def am_i_alive(request):
     async for i in arange(10):
         print(i)
     return HttpResponse(status=200)
+
+
+class Query(core_schema.Query, graphene.ObjectType): ...
+
+
+class Mutation(core_schema.Mutation, mailer_schema.Mutation, graphene.ObjectType): ...
+
+
+schema = graphene.Schema(
+    query=Query,
+    mutation=Mutation,
+)
 
 
 urlpatterns = [

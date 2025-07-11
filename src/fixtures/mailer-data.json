@@ -28,7 +28,8 @@
             "app": "21mQkMXXTIJg",
             "provider": 1,
             "external_id": "set_by_user",
-            "active": false
+            "active": false,
+            "from_address": "nice.person@nicedomain.com"
         }
     },
     {
@@ -38,7 +39,8 @@
             "app": "21mQkMXXTIJg",
             "provider": 2,
             "external_id": "set_by_provider",
-            "active": true
+            "active": true,
+            "from_address": "nice.person@nicedomain.com"
         }
     }
 ]

@@ -42,6 +42,7 @@ class EmailProvider(models.Model):
     class Meta:
         constraints = [
             constraints.UniqueConstraint(fields=["app", "provider"], name="unique_app_smtp_provider"),
+            constraints.UniqueConstraint(fields=["provider", "from_address"], name="unique_provider_from_address"),
             constraints.UniqueConstraint(
                 fields=["app"],
                 name="unique_active_app_smtp_provider",
@@ -56,6 +57,7 @@ class EmailProvider(models.Model):
         help_text="Use it to query the provider for the app smtp credentials",
     )
     active = models.BooleanField(default=False)
+    from_address = models.EmailField(default="unknown@nowhere.com")
 
     objects = models.Manager()
     actives = AppEmailActiveProviderManager()

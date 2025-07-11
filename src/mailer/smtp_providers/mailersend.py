@@ -43,7 +43,10 @@ class MailersendProvider(SMTPServiceProvider):
         if "message" in response:
             raise SMTPUserNotFound("User not found", self.__class__)
         if response["data"]["enabled"]:
-            return {"smtp_user": response["data"]["username"], "smtp_password": response["data"]["password"]}
+            return {
+                "username": response["data"]["username"],
+                "password": response["data"]["password"],
+            }
         raise ValueError("User not enabled", self.__class__)
 
     @classmethod
