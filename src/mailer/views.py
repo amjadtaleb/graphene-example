@@ -10,7 +10,7 @@ from core import models as core_models
 
 from .models import EmailEvent, EmailEventChoices, EmailProvider, SMTPProvider
 from .smtp_providers import SMTPServiceProvider, SMTPUserNotFound
-
+from .utils import this_billing_cycle
 
 logger = getLogger(__name__)
 
@@ -85,7 +85,7 @@ async def email_webhook(request, provider_name: str, token: str):
                     ).aexists():
                         #  mark all this user apps as maxed_quota
                         await EmailProvider.objects.filter(app_id__in=[i[0] for i in hobby_sender_app_ids]).aupdate(
-                            maxed_quota=True
+                            maxed_quota_for=this_billing_cycle()
                         )
                         # ideally we should also pause/disable all the smtp users of these hobby_sender_app_ids, till next month
             return JsonResponse(status=200, data={"success": True})

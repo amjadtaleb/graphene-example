@@ -31,11 +31,6 @@ class SMTPProvider(models.Model):
         return self.name
 
 
-class AppEmailActiveProviderManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(active=True, maxed_quota=False)
-
-
 class EmailProvider(models.Model):
     """Link an app to a provider, switch and deactivate when necesary"""
 
@@ -59,10 +54,7 @@ class EmailProvider(models.Model):
     active = models.BooleanField(default=False)
     from_address = models.EmailField(default="unknown@nowhere.com")
 
-    maxed_quota = models.BooleanField(default=False)
-
-    objects = models.Manager()
-    actives = AppEmailActiveProviderManager()
+    maxed_quota_for = models.DateField(null=True, help_text="The billing cycle for which the quota was maxed")
 
     def __str__(self):
         return f"{self.app.pk} - {self.provider}"
