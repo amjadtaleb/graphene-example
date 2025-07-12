@@ -27,11 +27,14 @@ class Mailersend(msgspec.Struct):
     smtp_host: str
     smtp_port: int
 
+class Usage(msgspec.Struct):
+    hobby_monthly_limit: int
 
 class Config(msgspec.Struct):
     database: Database
     smtp2go: SMTP2Go
     mailersend: Mailersend
+    usage: Usage
 
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config.toml"
