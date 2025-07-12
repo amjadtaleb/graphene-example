@@ -3,7 +3,8 @@ from logging import getLogger
 from typing import Optional
 
 from asgiref.sync import sync_to_async
-from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.core.mail import get_connection
 import graphene
 from graphene import relay
 
@@ -12,6 +13,8 @@ from mailer.dataloaders import AppEmailLoader, AppEmailTotalLoader
 
 from . import models
 from .smtp_providers import SMTPServiceProvider, SMTPUserNotFound
+from .utils import get_smtp_user_config
+
 
 logger = getLogger(__name__)
 
@@ -95,31 +98,44 @@ class getSMTPCredentials(graphene.Mutation):
 
     async def mutate(root, info, id):
         app_id = CustomNode.from_global_id(id)[1]
-        try:
-            app_provider_config = await models.EmailProvider.actives.select_related("provider").aget(app_id=app_id)
-        except models.EmailProvider.DoesNotExist:
-            raise SMTPUserNotFound("App is not active or does not have an active provider")
-
-        external_id = app_provider_config.external_id
-        provider = SMTPServiceProvider.get_provider(app_provider_config.provider.name)
-        # getting the provider should raise if it was not configured
-        credentials = await provider.get_user_credentials(external_id)
-        return {
-            "provider": app_provider_config.provider.name,
-            "host": settings.STMP_PROVIDERS[app_provider_config.provider.name].smtp_host,
-            "port": settings.STMP_PROVIDERS[app_provider_config.provider.name].smtp_port,
-            **credentials,
-        }
+        return await get_smtp_user_config(app_id)
 
 
 class sendEmail(graphene.Mutation):
-    async def mutate(info):
+    class Arguments:
+        app_id = graphene.String(required=True)
+        to = graphene.String(required=True)
+        subject = graphene.String(required=True)
+        html = graphene.String(required=True)
+
+    successful = graphene.Boolean()
+
+    async def mutate(root, info, app_id, to, subject, html):
+        app_id = CustomNode.from_global_id(app_id)[1]
+        credentials = await get_smtp_user_config(app_id)
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=html,
+            from_email=credentials.from_address,
+            to=[to],
+            connection=get_connection(
+                backend="django.core.mail.backends.smtp.EmailBackend",
+                host=credentials.host,
+                port=credentials.port,
+                username=credentials.username,
+                password=credentials.password,
+                use_tls=True,
+            ),
+        )
+
+        msg.attach_alternative(html, "text/html")
+        msg.send()
         return sendEmail(successful=True)
 
 
 class Mutation(graphene.ObjectType):
     getSMTP_credentials = getSMTPCredentials.Field()
-    # send_email = sendEmail.Field()
+    send_email = sendEmail.Field()
 
 
 schema = graphene.Schema(
