@@ -25,7 +25,6 @@ class SMTP2GoProvider(SMTPServiceProvider):
         return "https://api.smtp2go.com/v3/users/smtp/view"
 
     def gen_headers(self):
-        logger.warning(settings.STMP_PROVIDERS["smtp2go"].api_token)
         return {
             "Content-Type": "application/json",
             "X-Smtp2go-Api-Key": settings.STMP_PROVIDERS["smtp2go"].api_token,
