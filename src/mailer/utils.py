@@ -24,7 +24,7 @@ class SMTPUserConfig(Struct):
 
 async def get_smtp_user_config(app_id: str) -> SMTPUserConfig:
     try:
-        app_provider_config = await models.EmailProvider.objects.select_related("provider", "app__owner").aget(
+        app_provider_config = await models.EmailProvider.objects.select_related("provider").aget(
             Q(maxed_quota_for__isnull=True) | Q(maxed_quota_for__lt=this_billing_cycle()),
             app_id=app_id,
             active=True,
