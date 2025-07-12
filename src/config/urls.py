@@ -32,5 +32,4 @@ urlpatterns = [
     path("switch_provider/<str:app_id>/<str:provider_name>", switch_provider),
     path("webhook/email/<str:provider_name>/<str:token>", csrf_exempt(email_webhook), name="email_webhook"),
     path("graphql/", AsyncGraphQLView.as_view(schema=schema.graphql_schema, graphiql=True)),
-    path("", include("django_prometheus.urls")),
 ]

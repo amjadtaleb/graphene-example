@@ -121,31 +121,6 @@ services:
     networks:
       - wasmer-net
 
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: wasmer_prometheus
-    # command: [ "--config.file=/etc/prometheus/prometheus.yml" ]
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --web.console.templates=/etc/prometheus/consoles
-      - --web.console.libraries=/etc/prometheus/console_libraries
-      - --storage.tsdb.path=/prometheus
-      - --storage.tsdb.retention.time=1h
-      - --storage.tsdb.wal-compression
-      - --storage.tsdb.retention.size=1GB
-      - --storage.tsdb.min-block-duration=2h
-      - --storage.tsdb.max-block-duration=2h
-      - --web.route-prefix=/
-      - --web.enable-lifecycle
-      - --web.enable-otlp-receiver
-      - --enable-feature=exemplar-storage
-    volumes:
-      - ./compose/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9099:9090"
-    networks:
-      - wasmer-net
-    logging: *logging
 
   # grafana:
   #   image: grafana/grafana:latest
