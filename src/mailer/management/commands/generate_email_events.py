@@ -11,6 +11,7 @@ alpha_numeric = ascii_letters + digits
 RANDOM_ID_LENGTH = 24
 
 FROMS = [
+    "nice.person@nicedomain.com",
     "sender.1@nicedomain.com",
     "sender.2@nicedomain.com",
     "sender.3@nicedomain.com",
