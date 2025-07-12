@@ -29,7 +29,8 @@
             "provider": 1,
             "external_id": "set_by_user",
             "active": false,
-            "from_address": "nice.person@nicedomain.com"
+            "from_address": "nice.person@nicedomain.com",
+            "maxed_quota_for": null
         }
     },
     {
@@ -40,7 +41,8 @@
             "provider": 2,
             "external_id": "set_by_provider",
             "active": true,
-            "from_address": "nice.person@nicedomain.com"
+            "from_address": "nice.person@nicedomain.com",
+            "maxed_quota_for": null
         }
     }
 ]
