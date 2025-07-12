@@ -60,8 +60,9 @@ class SMTP2GoProvider(SMTPServiceProvider):
 
     @classmethod
     def parse_webhook(cls, payload: dict):
-        if (event := payload["event"]) in cls.ALL_EVENTS:
-            if event == "bounce":
+        if payload["event"] in cls.ALL_EVENTS:
+            event = cls.ALL_EVENTS[payload["event"]]  # map the event
+            if event == "bounce":  # prefix the bounce event with the bounce type
                 event = f"""{payload["bounce"]}_{event}"""
             return {
                 "event": event,
