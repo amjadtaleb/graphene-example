@@ -5,6 +5,7 @@ from graphene import relay
 from graphene_django import DjangoObjectType
 
 from mailer.schemas import AppEmails, UserEmails
+from mailer.models import EmailProvider
 
 from . import models
 from .custom_node import CustomNode
@@ -98,7 +99,11 @@ class upgradeAccount(graphene.Mutation):
     ok = graphene.Boolean()
 
     async def mutate(root, info, id):
-        count = await models.User.objects.filter(id=CustomNode.from_global_id(id)[1]).aupdate(plan=PlanEnum.PRO.value)
+        uid = CustomNode.from_global_id(id)[1]
+        count = await models.User.objects.filter(id=uid).aupdate(plan=PlanEnum.PRO.value)
+        if count > 0:
+            # TODO: try to do this without importing mailer models
+            await EmailProvider.objects.filter(app__owner_id=uid).aupdate(maxed_quota_for=None)
         return upgradeAccount(ok=count > 0)
 
 
