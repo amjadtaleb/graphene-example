@@ -204,3 +204,5 @@ STMP_PROVIDERS = {
     "smtp2go": config.smtp2go,
     "mailersend": config.mailersend,
 }
+
+HOBBY_MONTHLY_EMAIL_LIMIT = config.usage.hobby_monthly_limit

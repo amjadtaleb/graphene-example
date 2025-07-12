@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from asgiref.sync import sync_to_async
+from django.conf import settings
 from django.db.models import Q
 from django.http.response import JsonResponse
 from django.utils import timezone as dj_tz
@@ -57,12 +58,17 @@ async def email_webhook(request, provider_name: str, token: str):
                 if hobby_sender_app_ids:
                     # 3- and there is another event from any of this user's apps in the same billing cycle
                     now = dj_tz.datetime.now()
-                    if await EmailEvent.objects.filter(
+                    previously_sent_count = await EmailEvent.objects.filter(
                         ~Q(pk=new_event.pk),
+                        # count all other `sent` events so we don't miscount if the isolation levenl is missed up in async django
+                        event=EmailEventChoices.SENT.value,
                         send_time__gte=dj_tz.datetime(now.year, now.month, 1),
                         send_time__lte=now,
                         from_address__in=[i[1] for i in hobby_sender_app_ids],
-                    ).aexists():
+                    ).acount()
+                    if (
+                        previously_sent_count >= settings.HOBBY_MONTHLY_EMAIL_LIMIT - 1
+                    ):  # -1 because we excluded the current event
                         #  mark all this user apps as maxed_quota
                         await EmailProvider.objects.filter(app_id__in=[i[0] for i in hobby_sender_app_ids]).aupdate(
                             maxed_quota_for=this_billing_cycle()
