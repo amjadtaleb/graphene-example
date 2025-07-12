@@ -2,37 +2,17 @@ from logging import getLogger
 
 from asgiref.sync import sync_to_async
 from django.db.models import Q
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import JsonResponse
 from django.utils import timezone as dj_tz
 import msgspec.json
 
 from core import models as core_models
 
 from .models import EmailEvent, EmailEventChoices, EmailProvider, SMTPProvider
-from .smtp_providers import SMTPServiceProvider, SMTPUserNotFound
+from .smtp_providers import SMTPServiceProvider
 from .utils import this_billing_cycle
 
 logger = getLogger(__name__)
-
-
-async def get_app_credentials(request, app_id: str):
-    try:
-        app_provider_config = await EmailProvider.actives.select_related("provider").aget(app_id=app_id, active=True)
-        # select_related(provider) is important: other than being optimal it prevents django from executing a sync query later
-    except EmailProvider.DoesNotExist:
-        return JsonResponse(status=404, data={"error": "This app does not have an active provider"})
-
-    external_id = app_provider_config.external_id
-    provider = SMTPServiceProvider.get_provider(app_provider_config.provider.name)
-
-    try:
-        provider_credentials = await provider.get_user_credentials(external_id)
-    except SMTPUserNotFound as e:
-        return JsonResponse(status=404, data={"error": "no smtp user", "provider": app_provider_config.provider})
-    except ValueError as e:
-        return JsonResponse(status=400, data={"error": str(e)})
-
-    return JsonResponse(status=200, data=provider_credentials)
 
 
 async def email_webhook(request, provider_name: str, token: str):
@@ -97,18 +77,6 @@ async def email_webhook(request, provider_name: str, token: str):
             exc_info=True,
         )
         return JsonResponse(status=200, data={"error": "Invalid webhook data"})
-
-
-async def get_usage(request, from_address: str):
-    date_bin = request.GET.get("time_bin", "month")
-    time_window = {}  # it makes more sense to call this a date window and the params from_date and to_date
-    if from_time_str := request.GET.get("from_time"):
-        time_window["from_time"] = dj_tz.make_aware(dj_tz.datetime.fromisoformat(from_time_str))
-    if to_time_str := request.GET.get("to_time"):
-        time_window["to_time"] = dj_tz.make_aware(dj_tz.datetime.fromisoformat(to_time_str))
-
-    response = [i async for i in EmailEvent.gen_usage(from_address, date_bin, **time_window)]
-    return HttpResponse(msgspec.json.encode(response), content_type="application/json")
 
 
 async def switch_provider(request, app_id: str, provider_name: str):
