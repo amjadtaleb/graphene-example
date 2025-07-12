@@ -33,7 +33,7 @@ class SMTPProvider(models.Model):
 
 class AppEmailActiveProviderManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(active=True)
+        return super().get_queryset().filter(active=True, maxed_quota=False)
 
 
 class EmailProvider(models.Model):
@@ -58,6 +58,8 @@ class EmailProvider(models.Model):
     )
     active = models.BooleanField(default=False)
     from_address = models.EmailField(default="unknown@nowhere.com")
+
+    maxed_quota = models.BooleanField(default=False)
 
     objects = models.Manager()
     actives = AppEmailActiveProviderManager()
